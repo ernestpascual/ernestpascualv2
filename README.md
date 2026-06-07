@@ -8,6 +8,8 @@ A highly interactive, visually striking personal website built to resemble a mys
 - **Drag & Drop Cards**: A custom pointer-event-driven physics engine allows visitors to pick up and drop tarot cards onto designated spread positions.
 - **Iridescent Holographic Sweeps**: Cards placed in spreads sequence a beautiful iridescent foil and glittering sweep animation before the reading begins.
 - **Halftone Dust Particles**: A dense mesh of 2,500 floating particles running on `@tsparticles/react` that act like space dust and react to your mouse movements.
+- **Image Preloader**: A custom "boot sequence" initialization screen that completely prevents UI popping by forcing all card assets to load into memory before revealing the board.
+- **Mobile Optimized**: Custom JavaScript click-and-drag logic intelligently disables on mobile devices to allow for buttery-smooth native hardware-accelerated momentum swiping.
 - **Custom Cursor**: A custom-built, fine glowing red point replaces the default system cursor, seamlessly moving through the digital ether.
 - **AI Tarot Readings (Gemini)**: Seamlessly integrates with Google's Gemini AI to dynamically interpret the live state of your dragged cards against their spread slots.
 
@@ -51,6 +53,18 @@ This project is optimized for deployment on [Vercel](https://vercel.com).
 3. Before deploying, go to the project's **Settings** > **Environment Variables** in Vercel.
 4. Add a new variable with the key `GEMINI_API_KEY` and your actual API key as the value.
 5. Click **Deploy** (or **Redeploy** if you added the key after the initial build).
+
+## Custom Domain (Cloudflare + Vercel)
+
+If you are using Cloudflare to manage `ernestpascual.com`, follow these steps to connect it to your Vercel deployment:
+
+1. **In Vercel**: Go to your project's **Settings** > **Domains**.
+2. Type in `ernestpascual.com` and click **Add**. Vercel will give you specific DNS records to add (usually an `A` record and a `CNAME`).
+3. **In Cloudflare**: Go to your Cloudflare Dashboard, select your domain, and go to **DNS** > **Records**.
+4. Add the records Vercel provided:
+   - `A` record for `@` (ernestpascual.com) pointing to `76.76.21.21`
+   - `CNAME` record for `www` pointing to `cname.vercel-dns.com`
+5. **CRITICAL**: When adding these records in Cloudflare, make sure the **Proxy status** (the orange cloud icon) is toggled to **Off (DNS only - Grey Cloud)**. Vercel handles its own SSL and global CDN routing; keeping the orange cloud on will cause SSL certificate generation to fail.
 
 ## Configuration Guide (`app/config/data.json`)
 

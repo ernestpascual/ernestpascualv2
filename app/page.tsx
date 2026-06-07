@@ -13,12 +13,14 @@ export default function TarotExperience() {
   
   const [highestZ, setHighestZ] = useState(10);
   const [isClient, setIsClient] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [prompt, setPrompt] = useState<string>("");
   const [readingResult, setReadingResult] = useState<string | null>(null);
   const [readingPhase, setReadingPhase] = useState<"IDLE" | "SCANNING" | "READING">("IDLE");
   const [showPopup, setShowPopup] = useState(false);
   const [lastReadPrompt, setLastReadPrompt] = useState<string | null>(null);
   const [animatingCards, setAnimatingCards] = useState<{ id: string, delay: number }[]>([]);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   // Update prompt state whenever a card is dropped
   useEffect(() => {
@@ -110,6 +112,9 @@ export default function TarotExperience() {
 
   useEffect(() => {
     setIsClient(true);
+    
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    setIsTouchDevice(isTouch);
     const isMobile = window.innerWidth < 768;
     
     // Tighter clustering to keep them near each other
@@ -165,6 +170,22 @@ export default function TarotExperience() {
 
     setSpreads(placedSpreads);
     setCards(randomizedCards);
+
+    // Preload images before revealing the board
+    const visibleCards = data.cards.filter((card: any) => card.isVisible !== false);
+    const imagePromises = visibleCards.map((card: any) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve; // Graceful fallback
+        img.src = card.image;
+      });
+    });
+
+    Promise.all(imagePromises).then(() => {
+      setTimeout(() => setImagesLoaded(true), 500); // Small delay for aesthetic booting sequence
+    });
+
   }, []);
 
   const handlePointerDown = (e: React.PointerEvent, cardId: string) => {
@@ -242,12 +263,22 @@ export default function TarotExperience() {
 
   if (!isClient) return null;
 
+  if (!imagesLoaded) {
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center pointer-events-none z-50">
+        <div className="text-[#E6231D] text-xs tracking-widest uppercase animate-pulse">
+          INITIALIZING...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div 
-        className="relative cursor-grab active:cursor-grabbing" 
-        style={{ minHeight: "150vh", minWidth: "150vw", touchAction: "none" }}
-        onPointerDown={handleBoardPointerDown}
+        className={`relative ${!isTouchDevice ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        style={{ minHeight: "150vh", minWidth: "150vw", touchAction: isTouchDevice ? "auto" : "none" }}
+        onPointerDown={isTouchDevice ? undefined : handleBoardPointerDown}
       >
         <header className="absolute top-8 left-8 flex justify-between items-start z-10 pointer-events-none" style={{ width: "calc(100vw - 4rem)" }}>
           <h1 className="font-normal text-2xl tracking-widest uppercase pointer-events-auto">

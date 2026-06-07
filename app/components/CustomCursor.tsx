@@ -1,11 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      setIsMobile(true);
+      return;
+    }
+
     const onMouseMove = (e: MouseEvent) => {
       if (cursorRef.current) {
         // Adjust for the center of the 6px x 6px ball (3px offset)
@@ -18,6 +24,8 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", onMouseMove);
     };
   }, []);
+
+  if (isMobile) return null;
 
   return (
     <div 

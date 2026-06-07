@@ -21,8 +21,11 @@ body {
     font-family: var(--font-jost), sans-serif;
 }
 
-* {
-    cursor: none !important;
+/* Only hide cursor on desktop devices with a mouse */
+@media (pointer: fine) {
+    * {
+        cursor: none !important;
+    }
 }
 
 /* Custom styles for the tarot components */
