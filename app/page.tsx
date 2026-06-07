@@ -21,6 +21,7 @@ export default function TarotExperience() {
   const [lastReadPrompt, setLastReadPrompt] = useState<string | null>(null);
   const [animatingCards, setAnimatingCards] = useState<{ id: string, delay: number }[]>([]);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
 
   // Update prompt state whenever a card is dropped
   useEffect(() => {
@@ -116,11 +117,11 @@ export default function TarotExperience() {
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     setIsTouchDevice(isTouch);
     const isMobile = window.innerWidth < 768;
+    setIsMobileView(isMobile);
     
-    // Tighter clustering to keep them near each other
-    // Ensure we have enough space for 10 slots, but tighter area.
-    const clusterWidth = Math.max(window.innerWidth * 0.9, 800);
-    const clusterHeight = Math.max(window.innerHeight * 1.1, 900);
+    // Expand the cluster area drastically on mobile so the algorithm has room to randomly pack the 154x276 slots without overlapping
+    const clusterWidth = isMobile ? Math.max(window.innerWidth * 3, 1100) : Math.max(window.innerWidth * 0.9, 800);
+    const clusterHeight = isMobile ? Math.max(window.innerHeight * 2.5, 1800) : Math.max(window.innerHeight * 1.1, 900);
     
     const placedSpreads: any[] = [];
 
@@ -277,7 +278,7 @@ export default function TarotExperience() {
     <>
       <div 
         className={`relative ${!isTouchDevice ? 'cursor-grab active:cursor-grabbing' : ''}`}
-        style={{ minHeight: "150vh", minWidth: "150vw", touchAction: isTouchDevice ? "auto" : "none" }}
+        style={{ minHeight: isMobileView ? "300vh" : "150vh", minWidth: isMobileView ? "300vw" : "150vw", touchAction: isTouchDevice ? "auto" : "none" }}
         onPointerDown={isTouchDevice ? undefined : handleBoardPointerDown}
       >
         <header className="absolute top-8 left-8 flex justify-between items-start z-10 pointer-events-none" style={{ width: "calc(100vw - 4rem)" }}>
