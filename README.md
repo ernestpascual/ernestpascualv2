@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ernest Pascual | Personal Website
+
+A highly interactive, visually striking personal website built to resemble a mystical tarot/oracle card spread reading experience. Designed for seamless exploration, the site utilizes a custom drag-and-drop board powered by Next.js and React.
+
+## Features
+
+- **Interactive Tarot Board**: An expansive 1.5x scale canvas (150vw x 150vh) that allows users to seamlessly pan around by dragging the board.
+- **Drag & Drop Cards**: A custom pointer-event-driven physics engine allows visitors to pick up and drop tarot cards onto designated spread positions.
+- **Organic Felt Mat**: Features an organically edge-blended black velvet damask texture that perfectly tiles to mimic a real casino or reading mat.
+- **Dynamic Collision System**: Spread slots automatically arrange themselves using a mathematical collision avoidance algorithm to ensure cards are always comfortably reachable.
+- **Real-Time Location Tracking**: Automatically tracks and updates the UI based on exactly which spread position a card has been dropped into.
+- **AI Tarot Readings (Gemini)**: Seamlessly integrates with Google's Gemini AI to dynamically interpret the live state of your dragged cards against their spread slots.
+
+## Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Library**: [React](https://react.dev/)
+- **AI**: [Google Generative AI SDK](https://ai.google.dev/) (`gemini-2.5-flash`)
+- **Styling**: Vanilla CSS with Tailwind CSS configurations
+- **Data**: Centralized via `app/config/data.json` for easy content and AI persona updates
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies:
+
+```bash
+npm install
+```
+
+Next, configure your environment variables by copying the example file:
+
+```bash
+cp .env.example .env
+```
+
+Add your Google Gemini API key to the new `.env` file: `GEMINI_API_KEY=your_key_here`
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the experience.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Customization
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All text, meanings, AI system instructions, and card imagery can be safely customized inside the `app/config/data.json` file.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Images**: Add new tarot images to `public/img/cards/`.
+- **Favicon**: Change `public/favicon.svg` to update the tab icon.
+- **Meanings**: Each slot and card has a `meaning` field that directly informs the AI reading.
+- **AI Persona**: Edit the `systemPrompt` field to change how the AI interprets the cards.

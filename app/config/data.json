@@ -1,0 +1,112 @@
+{
+  "systemPrompt": "You are a mystical tarot card reader. Interpret the cards given the context of their spread positions. Be insightful, concise, and slightly mysterious.",
+  "isLocationVisible": true,
+  "title": "HI, I'M ERNEST",
+  "introText": "Engineers secure smart contracts and navigates decentralized blockchain protocols with absolute cryptographic precision.\n\nSits at the peak of creative technology leadership, establishing industry-defining standards and driving the agency's highest-tier innovative visions.",
+  "spreads": [
+    {
+      "id": "slot-1",
+      "label": "Quality Time",
+      "meaning": "This position represents your current focus and where you dedicate your energy.",
+      "x": 15,
+      "y": 20
+    },
+    {
+      "id": "slot-2",
+      "label": "2",
+      "meaning": "This position reveals hidden challenges or unseen obstacles.",
+      "x": 30,
+      "y": 30
+    },
+    {
+      "id": "slot-3",
+      "label": "3",
+      "meaning": "This position highlights past events that are currently influencing you.",
+      "x": 45,
+      "y": 45
+    },
+    {
+      "id": "slot-4",
+      "label": "4",
+      "meaning": "This position points to future possibilities and potential outcomes.",
+      "x": 60,
+      "y": 60
+    },
+    {
+      "id": "slot-5",
+      "label": "5",
+      "meaning": "This position represents your conscious thoughts and logical mind.",
+      "x": 10,
+      "y": 70
+    },
+    {
+      "id": "slot-6",
+      "label": "6",
+      "meaning": "This position uncovers your subconscious feelings and deep desires.",
+      "x": 35,
+      "y": 80
+    },
+    {
+      "id": "slot-7",
+      "label": "7",
+      "meaning": "This position shows how you perceive yourself and your core identity.",
+      "x": 75,
+      "y": 30
+    },
+    {
+      "id": "slot-8",
+      "label": "8",
+      "meaning": "This position indicates how the outside world and others perceive you.",
+      "x": 80,
+      "y": 70
+    },
+    {
+      "id": "slot-9",
+      "label": "9",
+      "meaning": "This position reveals your hopes, fears, and unspoken expectations.",
+      "x": 50,
+      "y": 85
+    },
+    {
+      "id": "slot-10",
+      "label": "10",
+      "meaning": "This position signifies the ultimate outcome or the overarching lesson.",
+      "x": 65,
+      "y": 15
+    }
+  ],
+  "cards": [
+    {
+      "id": "card-1",
+      "image": "/img/cards/1.jpg",
+      "meaning": "Card 1 Meaning: Represents intuition, inner voice, and mystery.",
+      "currentSpreadId": null,
+      "initialX": 10,
+      "initialY": 35
+    },
+    {
+      "id": "card-2",
+      "image": "/img/cards/2.jpg",
+      "meaning": "Card 2 Meaning: Represents action, manifestation, and moving forward.",
+      "currentSpreadId": null,
+      "initialX": 85,
+      "initialY": 45
+    },
+    {
+      "id": "card-3",
+      "image": "/img/cards/3.jpg",
+      "meaning": "Card 3 Meaning: Represents transformation, change, and new beginnings.",
+      "currentSpreadId": null,
+      "initialX": 15,
+      "initialY": 65
+    },
+    {
+      "id": "card-4",
+      "image": "/img/cards/4.jpg",
+      "meaning": "Card 4 Meaning: Represents balance, harmony, and patience.",
+      "currentSpreadId": null,
+      "initialX": 75,
+      "initialY": 65
+    }
+  ]
+}

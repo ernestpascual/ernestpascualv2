@@ -1,30 +1,79 @@
-@import "tailwindcss";
-
 :root {
-  --primary-color: #E6231D;
-  --bg-color: #FFFFFF;
-  --card-width: 140px;
-  --card-height: 251px;
-  --slot-width: calc(var(--card-width) * 1.1);
-  --slot-height: calc(var(--card-height) * 1.1);
+    --primary-color: #E6231D;
+    --bg-color: #FFFFFF;
+    --font-family: 'Jost', sans-serif;
+    --card-width: 140px;
+    --card-height: 251px;
+    --slot-width: calc(var(--card-width) * 1.1);
+    --slot-height: calc(var(--card-height) * 1.1);
 }
 
-@theme inline {
-  --color-background: var(--bg-color);
-  --color-foreground: var(--primary-color);
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background-color: #111111;
-    background-image: url('/img/bg-mat-seamless.png');
-    background-repeat: none;
-    background-size: 600px 600px;
-    color: #F0F0F0;
-    /* The layout should be scrollable, so no overflow: hidden */
-    font-family: var(--font-jost), sans-serif;
+    background-color: var(--bg-color);
+    font-family: var(--font-family);
+    color: var(--primary-color);
+    overflow: hidden; /* To prevent scrollbars when dragging out of bounds */
+    width: 100vw;
+    height: 100vh;
 }
 
-/* Custom styles for the tarot components */
+#app-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+header {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    right: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 10;
+    pointer-events: none; /* Let clicks pass through header area */
+}
+
+#main-title {
+    font-weight: 400;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    pointer-events: auto;
+}
+
+#intro-text-container {
+    max-width: 300px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    text-align: right;
+    pointer-events: auto;
+    white-space: pre-wrap;
+}
+
+#board {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+#spread-container, #card-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
 .spread-slot-wrapper {
     position: absolute;
     width: var(--slot-width);
@@ -57,7 +106,8 @@ body {
     width: var(--card-width);
     height: var(--card-height);
     transform: translate(-50%, -50%); /* Center on coordinates */
-    background-size: cover;
+    background-size: contain;
+    background-repeat: no-repeat;
     background-position: center;
     border-radius: 6px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -72,6 +122,7 @@ body {
     cursor: grabbing;
     transform: translate(-50%, -50%) scale(1.05);
     box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    z-index: 100 !important; /* Bring to front while dragging */
 }
 
 /* Optional: a subtle border or glow to make cards look premium */
