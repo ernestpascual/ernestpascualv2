@@ -281,11 +281,11 @@ export default function TarotExperience() {
         style={{ minHeight: isMobileView ? "300vh" : "150vh", minWidth: isMobileView ? "300vw" : "150vw", touchAction: isTouchDevice ? "auto" : "none" }}
         onPointerDown={isTouchDevice ? undefined : handleBoardPointerDown}
       >
-        <header className="absolute top-8 left-8 flex justify-between items-start z-10 pointer-events-none" style={{ width: "calc(100vw - 4rem)" }}>
+        <header className="absolute top-8 left-8 flex flex-col md:flex-row justify-between items-start z-10 pointer-events-none gap-4" style={{ width: "calc(100vw - 4rem)" }}>
           <h1 className="font-normal text-2xl tracking-widest uppercase pointer-events-auto">
             {data.title}
           </h1>
-          <div className="max-w-[300px] text-xs leading-relaxed text-right pointer-events-auto whitespace-pre-wrap hidden md:block">
+          <div className="max-w-[300px] text-xs leading-relaxed md:text-right pointer-events-auto whitespace-pre-wrap">
             {data.introText}
           </div>
         </header>
