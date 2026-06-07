@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   },
 };
 
+import ParticlesBackground from "./components/ParticlesBackground";
+import CustomCursor from "./components/CustomCursor";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,7 +29,11 @@ export default function RootLayout({
       lang="en"
       className={`${jost.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col font-jost overflow-x-hidden">{children}</body>
+      <body className="min-h-full flex flex-col font-jost overflow-x-hidden">
+        <CustomCursor />
+        <ParticlesBackground />
+        {children}
+      </body>
     </html>
   );
 }

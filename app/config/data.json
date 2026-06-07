@@ -1,76 +1,77 @@
 {
-  "systemPrompt": "You are a mystical tarot card reader. Interpret the cards given the context of their spread positions. Be insightful, concise, and slightly mysterious.",
-  "isLocationVisible": true,
-  "title": "HI, I'M ERNEST",
-  "introText": "Engineers secure smart contracts and navigates decentralized blockchain protocols with absolute cryptographic precision.\n\nSits at the peak of creative technology leadership, establishing industry-defining standards and driving the agency's highest-tier innovative visions.",
+  "systemPrompt": "You are a mystical, highly technical tarot reader interpreting Ernest Pascual's creative technology workflow. The cards represent Ernest's distinct technical skills, and the spread slots represent the phases of a project. Synthesize the card's meaning and the slot's meaning to explain exactly how Ernest applies his expertise to that specific phase. You may receive between 1 and 4 card placements. Interpret only the cards provided and do not mention or complain about missing cards. Always refer to 'Ernest' in the reading to personalize it, but weave his name in naturally and avoid using it repetitively. Keep the tone insightful, slightly mysterious, and strictly focused on his professional capabilities.",
+  "sendToGemini": true,
+  "isLocationVisible": false,
+  "title": "",
+  "introText": "Hi I'm Ernest, a creative technologist. Here are some archtypes of the things that I do, I will let the universe (aka Gemini 2.5 Flash) speak to you. Put any or all of the cards into the different thematic positions and click READ CARDS to reveal the answer.",
   "spreads": [
     {
-      "id": "slot-1",
-      "label": "Quality Time",
-      "meaning": "This position represents your current focus and where you dedicate your energy.",
+      "id": "1",
+      "label": "Vision",
+      "meaning": "This position acts as the watchful eye, illuminating the overarching focus and creative energy you are currently channeling into the digital ether. When a card is placed here, it reveals how your grandest ambitions are actively manifesting in the present reality. The system interprets the drawn card by bridging its inherent symbolism with the immediate context of your overarching vision within the spread.",
       "x": 15,
       "y": 20
     },
     {
-      "id": "slot-2",
-      "label": "2",
-      "meaning": "This position reveals hidden challenges or unseen obstacles.",
+      "id": "2",
+      "label": "Orchestration",
+      "meaning": "Here lies the control room, a space that reveals the hidden complexities and unseen algorithmic obstacles threatening to disrupt your carefully arranged plans. Any card dropped into this slot uncovers the chaotic variables you must actively manage to maintain harmony. The reading interprets the card's nature through the lens of orchestration, exposing both the friction and the flow of your current spread.",
       "x": 30,
       "y": 30
     },
     {
-      "id": "slot-3",
-      "label": "3",
-      "meaning": "This position highlights past events that are currently influencing you.",
+      "id": "3",
+      "label": "Solve",
+      "meaning": "This slot represents the ultimate debugger, highlighting the lingering errors and foundational past events that secretly influence your current operating state. By placing a card into this position, you uncover the historical data and underlying logic required to patch vulnerabilities in your path. The engine then interprets the card by fusing its core meaning with the context of your ongoing quest for a resolution within the spread.",
       "x": 45,
       "y": 45
     },
     {
-      "id": "slot-4",
-      "label": "4",
-      "meaning": "This position points to future possibilities and potential outcomes.",
+      "id": "4",
+      "label": "Spark",
+      "meaning": "This is the genesis node, a volatile terminal pointing toward untamed future possibilities and sudden bursts of disruptive potential. A card placed in this blazing sector ignites a glimpse of what could be, projecting potential outcomes onto your timeline. This position interprets the chosen card by analyzing its raw energy against the overarching spread, revealing the exact spark needed to leap forward.",
       "x": 60,
       "y": 60
     },
     {
-      "id": "slot-5",
-      "label": "5",
-      "meaning": "This position represents your conscious thoughts and logical mind.",
+      "id": "5",
+      "label": "System",
+      "meaning": "This rigid framework represents the mainframe of your conscious thoughts, mapping out the cold, logical architecture of your waking mind. Whenever a card interfaces with this node, it exposes the structural integrity of your current strategies and rational decisions. The spread interprets the card by calculating how its fundamental properties operate within the strict rules of your established system.",
       "x": 10,
       "y": 70
     },
     {
-      "id": "slot-6",
-      "label": "6",
-      "meaning": "This position uncovers your subconscious feelings and deep desires.",
+      "id": "6",
+      "label": "Sound",
+      "meaning": "Deep beneath the surface noise lies the resonant frequency of your subconscious, vibrating with unspoken feelings and hidden desires. A card submerged into this auditory depth translates the silent echoes of your intuition into a readable, tangible signal. The reading interprets the card's frequency in the context of the spread, tuning into the underlying emotional soundscape driving your journey.",
       "x": 35,
       "y": 80
     },
     {
-      "id": "slot-7",
-      "label": "7",
-      "meaning": "This position shows how you perceive yourself and your core identity.",
+      "id": "7",
+      "label": "Aesthetic",
+      "meaning": "This position serves as the ultimate mirror, reflecting the deliberate styling and core visual identity you project onto your internal canvas. Placing a card within this frame strips away the code to reveal how you truly perceive the art of your own existence. The interface interprets the drawn card by blending its inherent beauty or harshness with the overall aesthetic context of your spread.",
       "x": 75,
       "y": 30
     },
     {
-      "id": "slot-8",
-      "label": "8",
-      "meaning": "This position indicates how the outside world and others perceive you.",
+      "id": "8",
+      "label": "Artificial Intelligence",
+      "meaning": "This node acts as the synthetic observer, calculating how the outside world and external algorithms perceive your digital footprint. Dropping a card into this neural network reveals the compiled data of your public persona and the assumptions made by those watching. The system interprets the card by processing its symbolism through the cold, observant lens of an artificial intelligence analyzing your broader spread.",
       "x": 80,
       "y": 70
     },
     {
-      "id": "slot-9",
-      "label": "9",
-      "meaning": "This position reveals your hopes, fears, and unspoken expectations.",
+      "id": "9",
+      "label": "Build",
+      "meaning": "This active construction zone lays bare your highest hopes, structural fears, and the unspoken expectations of the empire you are trying to forge. A card slotted into this scaffolding highlights the raw materials and hidden anxieties fueling your relentless drive to create. The engine interprets the card by testing its symbolic weight against the load-bearing context of your entire build within the spread.",
       "x": 50,
       "y": 85
     },
     {
-      "id": "slot-10",
-      "label": "10",
-      "meaning": "This position signifies the ultimate outcome or the overarching lesson.",
+      "id": "10",
+      "label": "Scale",
+      "meaning": "This final frontier signifies the ultimate outcome, projecting the overarching lesson learned as your efforts expand toward infinite reach. When the final card ascends to this apex position, it reveals the grand trajectory and true magnitude of your realized potential. The configuration interprets the card by magnifying its core truth, scaling it up to provide a massive resolution to the entire spread.",
       "x": 65,
       "y": 15
     }
@@ -79,7 +80,9 @@
     {
       "id": "card-1",
       "image": "/img/cards/1.jpg",
-      "meaning": "Card 1 Meaning: Represents intuition, inner voice, and mystery.",
+      "meaning": "Commands advanced generative AI architectures and large language models to conjure intelligent digital ecosystems.",
+      "isVisible": true,
+      "isOuterGlowCard": false,
       "currentSpreadId": null,
       "initialX": 10,
       "initialY": 35
@@ -87,7 +90,9 @@
     {
       "id": "card-2",
       "image": "/img/cards/2.jpg",
-      "meaning": "Card 2 Meaning: Represents action, manifestation, and moving forward.",
+      "meaning": "Secure smart contracts and navigates decentralized blockchain protocols",
+      "isVisible": false,
+      "isOuterGlowCard": false,
       "currentSpreadId": null,
       "initialX": 85,
       "initialY": 45
@@ -95,7 +100,9 @@
     {
       "id": "card-3",
       "image": "/img/cards/3.jpg",
-      "meaning": "Card 3 Meaning: Represents transformation, change, and new beginnings.",
+      "meaning": " Sits at the peak of creative technology leadership, establishing industry-defining standards and driving the agency's highest-tier innovative visions.",
+      "isVisible": true,
+      "isOuterGlowCard": false,
       "currentSpreadId": null,
       "initialX": 15,
       "initialY": 65
@@ -103,7 +110,9 @@
     {
       "id": "card-4",
       "image": "/img/cards/4.jpg",
-      "meaning": "Card 4 Meaning: Represents balance, harmony, and patience.",
+      "meaning": " writes pristine, object-oriented TypeScript code and deploys robust web applications flawlessly across modern cloud infrastructure",
+      "isVisible": true,
+      "isOuterGlowCard": false,
       "currentSpreadId": null,
       "initialX": 75,
       "initialY": 65

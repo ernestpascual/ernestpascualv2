@@ -14,6 +14,11 @@ export default function TarotExperience() {
   const [highestZ, setHighestZ] = useState(10);
   const [isClient, setIsClient] = useState(false);
   const [prompt, setPrompt] = useState<string>("");
+  const [readingResult, setReadingResult] = useState<string | null>(null);
+  const [readingPhase, setReadingPhase] = useState<"IDLE" | "SCANNING" | "READING">("IDLE");
+  const [showPopup, setShowPopup] = useState(false);
+  const [lastReadPrompt, setLastReadPrompt] = useState<string | null>(null);
+  const [animatingCards, setAnimatingCards] = useState<{ id: string, delay: number }[]>([]);
 
   // Update prompt state whenever a card is dropped
   useEffect(() => {
@@ -33,6 +38,75 @@ export default function TarotExperience() {
     });
     setPrompt(newPrompt);
   }, [cards, spreads]);
+
+  const handleReadCards = async () => {
+    if (!prompt.trim()) return;
+
+    if (lastReadPrompt === prompt && readingResult) {
+      setShowPopup(true);
+      return;
+    }
+
+    setReadingPhase("SCANNING");
+
+    // Filter placed cards and trigger animation
+    const placedCards = cards.filter(card => {
+      if (card.currentX === undefined) return false;
+      return spreads.some(s => 
+        s.pxX !== undefined &&
+        Math.abs(card.currentX - s.pxX) < SLOT_W / 2 &&
+        Math.abs(card.currentY - s.pxY) < SLOT_H / 2
+      );
+    });
+
+    if (placedCards.length > 0) {
+      // Sort cards from left to right based on X coordinate
+      placedCards.sort((a, b) => a.currentX - b.currentX);
+      
+      const animState = placedCards.map((c, index) => ({
+        id: c.id,
+        delay: index * 0.4 // 400ms stagger between cards
+      }));
+      setAnimatingCards(animState);
+      
+      // Wait for the animation to finish before proceeding with the fetch
+      // Total time = max delay + 1s (animation duration)
+      const maxDelay = (placedCards.length - 1) * 0.4 + 1;
+      await new Promise(r => setTimeout(r, maxDelay * 1000));
+      
+      setAnimatingCards([]);
+    }
+
+    if (data.sendToGemini === false) {
+      setReadingPhase("IDLE");
+      return; // Stop here, do not call Gemini
+    }
+
+    setReadingPhase("READING");
+
+    try {
+      const res = await fetch("/api/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+      
+      if (data.text) {
+        setReadingResult(data.text);
+        setLastReadPrompt(prompt);
+        setShowPopup(true);
+      } else {
+        console.error("Error:", data.error);
+        alert("Failed to read cards.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("An error occurred while fetching the reading.");
+    } finally {
+      setReadingPhase("IDLE");
+    }
+  };
 
   useEffect(() => {
     setIsClient(true);
@@ -76,8 +150,10 @@ export default function TarotExperience() {
       placedSpreads.push({ ...spread, pxX: randX, pxY: randY });
     });
 
-    const randomizedCards = data.cards.map((card) => {
-      const minX = SLOT_W / 2;
+    const randomizedCards = data.cards
+      .filter((card: any) => card.isVisible !== false)
+      .map((card) => {
+        const minX = SLOT_W / 2;
       const maxX = window.innerWidth - SLOT_W / 2;
       const minY = isMobile ? window.innerHeight * 0.8 : window.innerHeight / 2;
       const maxY = clusterHeight - SLOT_H / 2;
@@ -182,10 +258,10 @@ export default function TarotExperience() {
           </div>
         </header>
 
-        <div className="fixed top-1/2 left-4 -translate-y-1/2 -rotate-90 origin-center text-[10px] tracking-widest uppercase pointer-events-none z-20 text-[#E6231D] bg-white p-[5px]">
+        <div className="fixed top-1/2 left-4 -translate-y-1/2 -rotate-90 origin-center text-[10px] tracking-widest uppercase pointer-events-none z-20 text-[#E6231D] bg-black p-[5px]">
           DRAG CARDS
         </div>
-        <div className="fixed top-1/2 right-4 -translate-y-1/2 rotate-90 origin-center text-[10px] tracking-widest uppercase pointer-events-none z-20 text-[#E6231D] bg-white p-[5px]">
+        <div className="fixed top-1/2 right-4 -translate-y-1/2 rotate-90 origin-center text-[10px] tracking-widest uppercase pointer-events-none z-20 text-[#E6231D] bg-black p-[5px]">
           DRAG AROUND SCREEN
         </div>
 
@@ -206,10 +282,15 @@ export default function TarotExperience() {
 
           {cards.map((card: any) => {
             if (card.currentX === undefined) return null;
+            
+            const animConfig = animatingCards.find(a => a.id === card.id);
+            const isHolo = !!animConfig;
+            const isOuterGlow = card.isOuterGlowCard === true;
+
             return (
               <div
                 key={card.id}
-                className="tarot-card pointer-events-auto"
+                className={`tarot-card pointer-events-auto ${isHolo ? 'holo-active' : ''} ${isHolo && isOuterGlow ? 'holo-glow-active' : ''}`}
                 id={card.id}
                 onPointerDown={(e) => handlePointerDown(e, card.id)}
                 style={{
@@ -217,6 +298,7 @@ export default function TarotExperience() {
                   left: `${card.currentX}px`,
                   top: `${card.currentY}px`,
                   zIndex: card.zIndex || 10,
+                  ...(isHolo ? { '--holo-delay': `${animConfig.delay}s` } as any : {})
                 }}
               ></div>
             );
@@ -258,6 +340,45 @@ export default function TarotExperience() {
               value={prompt}
               placeholder="Waiting for cards to be placed in spreads..."
             />
+          </div>
+        </div>
+      )}
+
+      {/* Read Cards Button */}
+      {prompt.trim().length > 0 && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+          <button 
+            onClick={handleReadCards}
+            disabled={readingPhase !== "IDLE"}
+            className="bg-black text-[#E6231D] border border-[#E6231D] px-8 py-3 uppercase tracking-widest text-sm font-bold hover:bg-[#E6231D] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+          >
+            {readingPhase === "SCANNING" ? "SCANNING..." : readingPhase === "READING" ? "CONSULTING ORACLE..." : (lastReadPrompt === prompt && readingResult) ? "VIEW AGAIN" : "READ CARDS"}
+          </button>
+        </div>
+      )}
+
+      {/* Reading Popup Modal */}
+      {showPopup && readingResult && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm pointer-events-auto">
+          <div className="bg-[#111] border border-[#E6231D] text-[#F0F0F0] max-w-lg w-full p-8 relative shadow-2xl">
+            <button 
+              onClick={() => setShowPopup(false)}
+              className="absolute top-4 right-4 text-[#E6231D] hover:text-white text-2xl leading-none"
+            >
+              &times;
+            </button>
+            <h2 className="text-[#E6231D] text-xl tracking-widest uppercase mb-6 font-bold border-b border-[#E6231D] pb-2">Your Reading</h2>
+            <div className="text-sm leading-relaxed whitespace-pre-wrap">
+              {readingResult}
+            </div>
+            <div className="mt-8 flex justify-center">
+              <button 
+                onClick={() => setShowPopup(false)}
+                className="bg-transparent border border-[#E6231D] text-[#E6231D] hover:bg-[#E6231D] hover:text-white transition-colors px-6 py-2 uppercase tracking-widest text-xs"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

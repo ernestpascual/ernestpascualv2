@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // Prepend the system prompt from data.json
-    const fullPrompt = `${data.systemPrompt}\n\nHere are the current card positions:\n${prompt}\n\nPlease provide a reading based on these positions.`;
+    const fullPrompt = `${data.systemPrompt}\n\nLimit your response to a maximum of 100 words.\n\nHere are the current card positions:\n${prompt}\n\nPlease provide a reading based on these positions.`;
 
     const result = await model.generateContent(fullPrompt);
     const response = result.response;

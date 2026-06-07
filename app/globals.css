@@ -2,7 +2,7 @@
 
 :root {
   --primary-color: #E6231D;
-  --bg-color: #FFFFFF;
+  --bg-color: #000000;
   --card-width: 140px;
   --card-height: 251px;
   --slot-width: calc(var(--card-width) * 1.1);
@@ -15,13 +15,14 @@
 }
 
 body {
-    background-color: #111111;
-    background-image: url('/img/bg-mat-seamless.png');
-    background-repeat: none;
-    background-size: 600px 600px;
+    background-color: #000000;
     color: #F0F0F0;
     /* The layout should be scrollable, so no overflow: hidden */
     font-family: var(--font-jost), sans-serif;
+}
+
+* {
+    cursor: none !important;
 }
 
 /* Custom styles for the tarot components */
@@ -34,7 +35,7 @@ body {
 .spread-slot-label {
     font-size: 0.6rem;
     text-align: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.1rem;
     line-height: 1.2;
     min-height: 20px; /* Space even if empty */
 }
@@ -66,6 +67,41 @@ body {
     user-select: none;
     -webkit-user-drag: none; /* Prevent native image drag */
     touch-action: none; /* For pointer events */
+    overflow: hidden;
+    isolation: isolate; /* Fix for WebKit mix-blend-mode leaking outside overflow: hidden */
+}
+
+@keyframes holo-sweep {
+  0% { left: -150%; }
+  100% { left: 200%; }
+}
+
+@keyframes holo-glow {
+  0% { box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+  50% { box-shadow: 0 0 27px 9px rgba(0, 255, 255, 0.6), 0 0 54px 18px rgba(255, 0, 255, 0.5); }
+  100% { box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+}
+
+.tarot-card.holo-active::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: -150%; width: 100%;
+  background-image: 
+    radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px),
+    linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.8) 30%, rgba(255, 0, 255, 0.8) 50%, rgba(0, 255, 255, 0.8) 70%, transparent 100%);
+  background-size: 4px 4px, 100% 100%;
+  background-blend-mode: color-dodge;
+  transform: skewX(-25deg);
+  animation: holo-sweep 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: var(--holo-delay, 0s);
+  pointer-events: none;
+  z-index: 20;
+  mix-blend-mode: screen;
+}
+
+.tarot-card.holo-glow-active {
+  animation: holo-glow 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: var(--holo-delay, 0s);
 }
 
 .tarot-card:active {
