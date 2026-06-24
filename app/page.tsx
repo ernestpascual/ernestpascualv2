@@ -13,7 +13,10 @@ export default function TarotExperience() {
   
   const [highestZ, setHighestZ] = useState(10);
   const [isClient, setIsClient] = useState(false);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [preloadStatus, setPreloadStatus] = useState<"LOADING" | "READY" | "COMPLETED">("LOADING");
+  const [loadedCount, setLoadedCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [showInstructionPopup, setShowInstructionPopup] = useState(false);
   const [prompt, setPrompt] = useState<string>("");
   const [readingResult, setReadingResult] = useState<string | null>(null);
   const [readingPhase, setReadingPhase] = useState<"IDLE" | "SCANNING" | "READING">("IDLE");
@@ -119,8 +122,8 @@ export default function TarotExperience() {
     const isMobile = window.innerWidth < 768;
     setIsMobileView(isMobile);
     
-    // Expand the cluster area drastically on mobile so the algorithm has room to randomly pack the 154x276 slots without overlapping
-    const clusterWidth = isMobile ? Math.max(window.innerWidth * 3, 1100) : Math.max(window.innerWidth * 0.9, 800);
+    // Only expand cluster width on mobile to allow cards to spread out horizontally
+    const clusterWidth = isMobile ? Math.max(window.innerWidth * 3, 1100) : window.innerWidth;
     const clusterHeight = isMobile ? Math.max(window.innerHeight * 2.5, 1800) : Math.max(window.innerHeight * 1.1, 900);
     
     const placedSpreads: any[] = [];
@@ -142,6 +145,14 @@ export default function TarotExperience() {
         randX = Math.random() * (maxX - minX) + minX;
         randY = Math.random() * (maxY - minY) + minY;
         
+        // Avoid the top-left area where the header (Ernest Pascual, Creative Technologist, and [ View Instructions ]) resides
+        // Bounding box: X in [0, 350], Y in [0, 180]
+        if (randX - SLOT_W / 2 < 350 && randY - SLOT_H / 2 < 180) {
+          overlap = true;
+          attempts++;
+          continue;
+        }
+
         for (const p of placedSpreads) {
           const distBaseX = SLOT_W + PADDING;
           const distBaseY = SLOT_H + PADDING;
@@ -172,19 +183,40 @@ export default function TarotExperience() {
     setSpreads(placedSpreads);
     setCards(randomizedCards);
 
-    // Preload images before revealing the board
-    const visibleCards = data.cards.filter((card: any) => card.isVisible !== false);
-    const imagePromises = visibleCards.map((card: any) => {
-      return new Promise((resolve) => {
+    // Preload all cards and wait for fonts before displaying Let's Go
+    const allCards = data.cards;
+    const totalAssets = allCards.length + 1; // cards + fonts
+    setTotalCount(totalAssets);
+    let loaded = 0;
+
+    const incrementLoaded = () => {
+      loaded = Math.min(loaded + 1, totalAssets);
+      setLoadedCount(loaded);
+    };
+
+    const imagePromises = allCards.map((card: any) => {
+      return new Promise<void>((resolve) => {
         const img = new Image();
-        img.onload = resolve;
-        img.onerror = resolve; // Graceful fallback
+        img.onload = () => {
+          incrementLoaded();
+          resolve();
+        };
+        img.onerror = () => {
+          incrementLoaded();
+          resolve();
+        };
         img.src = card.image;
       });
     });
 
-    Promise.all(imagePromises).then(() => {
-      setTimeout(() => setImagesLoaded(true), 500); // Small delay for aesthetic booting sequence
+    const fontPromise = document.fonts.ready.then(() => {
+      incrementLoaded();
+    });
+
+    Promise.all([...imagePromises, fontPromise]).then(() => {
+      setTimeout(() => {
+        setPreloadStatus("READY");
+      }, 800); // Small delay for aesthetic booting sequence
     });
 
   }, []);
@@ -236,6 +268,16 @@ export default function TarotExperience() {
   };
 
   const handleBoardPointerDown = (e: React.PointerEvent) => {
+    const targetElement = e.target as HTMLElement;
+    if (
+      targetElement.closest("button") ||
+      targetElement.closest("a") ||
+      targetElement.closest("textarea") ||
+      targetElement.closest(".tarot-card")
+    ) {
+      return;
+    }
+
     const target = e.currentTarget as HTMLElement;
     target.setPointerCapture(e.pointerId);
 
@@ -247,7 +289,13 @@ export default function TarotExperience() {
     const onPointerMove = (moveEvent: PointerEvent) => {
       const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - startY;
-      window.scrollTo(startScrollX - dx, startScrollY - dy);
+      if (isMobileView) {
+        // Allow horizontal and vertical scrolling on mobile
+        window.scrollTo(startScrollX - dx, startScrollY - dy);
+      } else {
+        // Scroll vertically only on desktop
+        window.scrollTo(startScrollX, startScrollY - dy);
+      }
     };
 
     const onPointerUp = (upEvent: PointerEvent) => {
@@ -264,11 +312,52 @@ export default function TarotExperience() {
 
   if (!isClient) return null;
 
-  if (!imagesLoaded) {
+  if (preloadStatus !== "COMPLETED") {
+    const percentage = totalCount > 0 ? Math.round((loadedCount / totalCount) * 100) : 0;
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center pointer-events-none z-50">
-        <div className="text-[#E6231D] text-xs tracking-widest uppercase animate-pulse">
-          INITIALIZING...
+      <div className="fixed inset-0 flex flex-col items-center justify-center bg-black z-[999] pointer-events-auto select-none">
+        <div className="max-w-md w-full px-8 flex flex-col items-center">
+          <h1 className="text-white text-3xl font-bold tracking-[0.25em] uppercase mb-1 text-center font-iosevka">
+            ERNEST PASCUAL
+          </h1>
+          <h2 className="text-[#E6231D] text-xs tracking-[0.3em] uppercase mb-16 text-center font-normal font-iosevka">
+            CREATIVE TECHNOLOGIST
+          </h2>
+
+          {preloadStatus === "LOADING" ? (
+            <div className="w-full flex flex-col items-center font-iosevka">
+              <div className="text-[#E6231D] text-[10px] tracking-[0.2em] uppercase mb-4 h-6 text-center">
+                {loadedCount < totalCount - 1
+                  ? `RETRIEVING ARCHETYPES (${loadedCount}/${totalCount - 1})...`
+                  : "TUNING NEURAL NETWORKS..."
+                }
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-64 h-[2px] bg-neutral-900 relative overflow-hidden border border-neutral-800">
+                <div 
+                  className="h-full bg-[#E6231D] transition-all duration-300 ease-out shadow-[0_0_8px_#E6231D]" 
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+
+              <div className="text-[#888] text-[9px] tracking-widest uppercase mt-4">
+                {percentage}% LOADED
+              </div>
+            </div>
+          ) : (
+            <div className="w-full flex flex-col items-center animate-fadeIn font-iosevka">
+              <button
+                onClick={() => {
+                  setPreloadStatus("COMPLETED");
+                  setShowInstructionPopup(true);
+                }}
+                className="bg-transparent text-white border border-[#E6231D] px-10 py-4 uppercase tracking-[0.3em] text-xs font-bold hover:bg-[#E6231D] hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(230,35,29,0.3)] hover:shadow-[0_0_25px_rgba(230,35,29,0.6)] cursor-pointer active:scale-95"
+              >
+                LET'S GO
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -278,15 +367,28 @@ export default function TarotExperience() {
     <>
       <div 
         className={`relative ${!isTouchDevice ? 'cursor-grab active:cursor-grabbing' : ''}`}
-        style={{ minHeight: isMobileView ? "300vh" : "150vh", minWidth: isMobileView ? "300vw" : "150vw", touchAction: isTouchDevice ? "auto" : "none" }}
+        style={{ 
+          minHeight: isMobileView ? "300vh" : "150vh", 
+          minWidth: isMobileView ? "300vw" : "100%", 
+          maxWidth: isMobileView ? "none" : "100vw", 
+          touchAction: isTouchDevice ? "auto" : "none" 
+        }}
         onPointerDown={isTouchDevice ? undefined : handleBoardPointerDown}
       >
-        <header className="absolute top-8 left-8 flex flex-col md:flex-row justify-between items-start z-10 pointer-events-none gap-4" style={{ width: "calc(100vw - 4rem)" }}>
-          <h1 className="font-normal text-2xl tracking-widest uppercase pointer-events-auto">
-            {data.title}
-          </h1>
-          <div className="max-w-[300px] text-xs leading-relaxed md:text-right pointer-events-auto whitespace-pre-wrap">
-            {data.introText}
+        <header className="absolute top-8 left-8 flex flex-col items-start z-10 pointer-events-none gap-1">
+          <div className="flex flex-col pointer-events-auto">
+            <h1 className="font-normal text-2xl tracking-widest uppercase">
+              {data.title || "ERNEST PASCUAL"}
+            </h1>
+            <div className="text-xs tracking-[0.2em] uppercase text-[#E6231D] mt-1 mb-2 font-bold">
+              Creative Technologist
+            </div>
+            <button
+              onClick={() => setShowInstructionPopup(true)}
+              className="text-[#888] hover:text-white text-[10px] tracking-widest uppercase hover:underline text-left cursor-pointer transition-colors"
+            >
+              [ View Instructions ]
+            </button>
           </div>
         </header>
 
@@ -377,17 +479,15 @@ export default function TarotExperience() {
       )}
 
       {/* Read Cards Button */}
-      {prompt.trim().length > 0 && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-          <button 
-            onClick={handleReadCards}
-            disabled={readingPhase !== "IDLE"}
-            className="bg-black text-[#E6231D] border border-[#E6231D] px-8 py-3 uppercase tracking-widest text-sm font-bold hover:bg-[#E6231D] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-          >
-            {readingPhase === "SCANNING" ? "SCANNING..." : readingPhase === "READING" ? "CONSULTING ORACLE..." : (lastReadPrompt === prompt && readingResult) ? "VIEW AGAIN" : "READ CARDS"}
-          </button>
-        </div>
-      )}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+        <button 
+          onClick={handleReadCards}
+          disabled={prompt.trim().length === 0 || readingPhase !== "IDLE"}
+          className="bg-black text-[#E6231D] border border-[#E6231D] px-8 py-3 uppercase tracking-widest text-sm font-bold hover:bg-[#E6231D] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+        >
+          {readingPhase === "SCANNING" ? "SCANNING..." : readingPhase === "READING" ? "CONSULTING ORACLE..." : (lastReadPrompt === prompt && readingResult) ? "VIEW AGAIN" : "READ CARDS"}
+        </button>
+      </div>
 
       {/* Reading Popup Modal */}
       {showPopup && readingResult && (
@@ -409,6 +509,42 @@ export default function TarotExperience() {
                 className="bg-transparent border border-[#E6231D] text-[#E6231D] hover:bg-[#E6231D] hover:text-white transition-colors px-6 py-2 uppercase tracking-widest text-xs"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Instructions Popup Modal */}
+      {showInstructionPopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm pointer-events-auto">
+          <div className="bg-[#111] border border-[#E6231D] text-[#F0F0F0] max-w-md w-full p-8 relative shadow-2xl animate-fadeIn">
+            <button 
+              onClick={() => setShowInstructionPopup(false)}
+              className="absolute top-4 right-4 text-[#E6231D] hover:text-white text-2xl leading-none cursor-pointer"
+            >
+              &times;
+            </button>
+            <h2 className="text-[#E6231D] text-base tracking-[0.2em] uppercase mb-6 font-bold border-b border-[#E6231D] pb-2 font-iosevka">
+              INSTRUCTIONS
+            </h2>
+            <div className="text-sm leading-relaxed space-y-4 text-[#CCCCCC] font-iosevka">
+              <p>
+                Hi I'm Ernest and I am a Creative Technologist. If you want to know about what I do place 1 or all cards within the boxes and click READ CARDS.
+              </p>
+              <p>
+                The position of the boxes that give meaning are randomized using the current state of time.
+              </p>
+              <p>
+                It's archetype-based cards about what I do that you can drag around and place in certain areas where it can find meaning.
+              </p>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <button 
+                onClick={() => setShowInstructionPopup(false)}
+                className="bg-[#E6231D] text-black border border-[#E6231D] hover:bg-transparent hover:text-[#E6231D] transition-colors px-8 py-3 uppercase tracking-widest text-xs font-bold shadow-lg cursor-pointer"
+              >
+                BEGIN
               </button>
             </div>
           </div>

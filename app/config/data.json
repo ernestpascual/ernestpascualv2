@@ -110,7 +110,7 @@
     {
       "id": "card-4",
       "image": "/img/cards/4.jpg",
-      "meaning": " writes pristine, object-oriented TypeScript code and deploys robust web applications flawlessly across modern cloud infrastructure",
+      "meaning": " writes pristine, object-oriented TypeScript, Python, Solidity, and Java code and deploys robust web applications flawlessly across modern cloud infrastructure",
       "isVisible": true,
       "isOuterGlowCard": false,
       "currentSpreadId": null,
